@@ -14,6 +14,12 @@ def hello_get():
 
 @app.route("/hello_post", methods=["POST"])
 def hello_post():
+    username = request.args.get("username")
+    return username + '--NginxFlask'
+
+# 客户端用form表单形式POST提交
+@app.route("/hello_post_form", methods=["POST"])
+def hello_post_form():
     username = request.form.get("username")
     return username + '--NginxFlask'
 
@@ -26,4 +32,4 @@ def hello_getpost():
     return username + '--NginxFlask'
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1',port=5003)
+    app.run(host='10.5.9.57',port=5003)
