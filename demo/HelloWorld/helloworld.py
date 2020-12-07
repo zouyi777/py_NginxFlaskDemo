@@ -12,6 +12,7 @@ def hello_get():
     username = request.args.get("username")
     return username + '--NginxFlask'
 
+# 客户端不用form表单形式POST提交
 @app.route("/hello_post", methods=["POST"])
 def hello_post():
     username = request.args.get("username")
