@@ -2,10 +2,16 @@ from net_model import net_model
 from utils import pre_data_utils
 import numpy as np
 from py_common_dict import gen_com_dict
+import os
 
 INUPT_LENGTH =16
 OUTPUT_LENGTH = 17
-
+global model_train
+model_train = None
+global encoder_infer
+encoder_infer= None
+global decoder_infer
+decoder_infer = None
 # 获取字典
 vocab_size,dict,dict_reverse = gen_com_dict.gen_dict1()
 
@@ -49,16 +55,24 @@ def predict_chinese(source,encoder_inference, decoder_inference, n_steps, featur
     return output
 
 def predict_ancient(texts):
-    model_train = net_model.Seq2Seq(vocab_size)
-    model_train.load_weights("model/ancient_poetry_weights.h5")
-    encoder_infer = net_model.encoder_infer(model_train)
-    decoder_infer = net_model.decoder_infer(model_train)
+    model_path = "model/ancient_poetry_weights.h5"
+    realpath = os.path.realpath(model_path)
+    global model_train
+    if model_train==None:
+        model_train = net_model.Seq2Seq(vocab_size)
+        model_train.load_weights(realpath)
+    global encoder_infer
+    if encoder_infer == None:
+        encoder_infer = net_model.encoder_infer(model_train)
+    global decoder_infer
+    if decoder_infer == None:
+        decoder_infer = net_model.decoder_infer(model_train)
     encoder_input = pre_data_utils.gen_sequence_without_onehot([texts], dict, INUPT_LENGTH)
     out = predict_chinese(encoder_input, encoder_infer, decoder_infer, OUTPUT_LENGTH, vocab_size)
     return out;
 
 if __name__ == '__main__':
-    texts = "酿酒"
+    texts = "时光"
     out = predict_ancient(texts)
     print(texts)
     print(out)
