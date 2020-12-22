@@ -14,4 +14,4 @@ def hello_post_form():
     return pre_words
 
 if __name__ == '__main__':
-    app.run(host='10.5.9.57',port=5003)
+    app.run(host='10.5.7.232',port=5003)

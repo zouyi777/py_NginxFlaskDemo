@@ -33,7 +33,7 @@ def sample(preds, temperature=1.0):
 # 预测
 def predict_chinese(source,encoder_inference, decoder_inference, n_steps, features):
     #先通过推理encoder获得预测输入序列的隐状态
-    _, enc_state_h, enc_state_c = encoder_inference.predict(source)
+    enc_outputs, enc_state_h, enc_state_c = encoder_inference.predict(source)
     state = [enc_state_h, enc_state_c]
     #第一个字符'\t',为起始标志
     predict_seq = np.array([[dict['\t']]])
@@ -42,7 +42,7 @@ def predict_chinese(source,encoder_inference, decoder_inference, n_steps, featur
     #每次循环用上次预测的字符作为输入来预测下一次的字符，直到预测出了终止符
     for i in range(n_steps):#n_steps为句子最大长度
         #给decoder输入上一个时刻的h,c隐状态，以及上一次的预测字符predict_seq
-        yhat,h,c = decoder_inference.predict([predict_seq]+state)
+        yhat,h,c = decoder_inference.predict([enc_outputs, predict_seq]+state)
         #注意，这里的yhat为Dense之后输出的结果，因此与h不同
         char_index = np.argmax(yhat[0,-1,:])
         # char_index = sample(yhat[0,-1,:])
@@ -66,7 +66,7 @@ def predict_ancient(texts):
         encoder_infer = net_model.encoder_infer(model_train)
     global decoder_infer
     if decoder_infer == None:
-        decoder_infer = net_model.decoder_infer(model_train)
+        decoder_infer = net_model.decoder_infer(model_train,encoder_infer)
     encoder_input = pre_data_utils.gen_sequence_without_onehot([texts], dict, INUPT_LENGTH)
     out = predict_chinese(encoder_input, encoder_infer, decoder_infer, OUTPUT_LENGTH, vocab_size)
     return out;
